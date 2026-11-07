@@ -1,0 +1,100 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Du bist Süß❤️</title>
+<style>
+* { margin: 0; padding: 0; }
+body {
+  background: black;
+  overflow: hidden;
+}
+canvas {
+  width: 100vw;
+  height: 100dvh;
+  display: block;
+}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let w, h, scale;
+let progress = 0;
+let offset = 0;
+
+const COUNT = 38;
+
+function resize() {
+  w = innerWidth;
+  h = innerHeight;
+
+  canvas.width = w * devicePixelRatio;
+  canvas.height = h * devicePixelRatio;
+
+  ctx.setTransform(
+    devicePixelRatio, 0, 0,
+    devicePixelRatio, 0, 0
+  );
+
+  scale = Math.min(w / 36, h / 38);
+}
+resize();
+window.addEventListener("resize", resize);
+
+function heart(t) {
+  return {
+    x: w / 2 + 16 * Math.sin(t)**3 * scale,
+    y: h / 2 - (
+      13 * Math.cos(t)
+      - 5 * Math.cos(2*t)
+      - 2 * Math.cos(3*t)
+      - Math.cos(4*t)
+    ) * scale
+  };
+}
+
+function draw() {
+  ctx.clearRect(0, 0, w, h);
+
+  // Поступове формування серця
+  progress = Math.min(COUNT, progress + 0.12);
+
+  // Усі написи рухаються по одному колу
+  offset += 0.012;
+
+  for (let i = 0; i < Math.floor(progress); i++) {
+    const t = (
+      (i / COUNT) * Math.PI * 2 + offset
+    ) % (Math.PI * 2);
+
+    const p = heart(t);
+
+    ctx.save();
+
+    ctx.font = `bold ${Math.max(8, w * 0.025)}px Arial`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.fillStyle = "#ff8acb";
+    ctx.shadowColor = "#ff168f";
+    ctx.shadowBlur = 12;
+
+    ctx.fillText("Du bist Süß", p.x, p.y);
+
+    ctx.restore();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>
